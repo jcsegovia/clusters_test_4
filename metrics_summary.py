@@ -63,6 +63,7 @@ with open(OUTPUT_REPORTS_FILE, 'w') as output_report_file_handler:
         print(f'Using default reports mechanism. Reading all report directories')
         for work_dir in DIRECTORIES:
             report_directories = os.listdir(work_dir)
+            report_directories.sort()
             for report_dir in report_directories:
                 if report_dir.startswith('report_'):
                     path = f'{work_dir}/{report_dir}'
