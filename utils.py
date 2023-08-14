@@ -528,11 +528,11 @@ class Utils:
                 html.write('<br/>\n')
             html.write(f'<h2>New sources (100% original sources found)</h2>\n')
             for file in new_files:
-                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}')
+                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}<br/>\n')
                 html.write(f'<img src="{Utils.get_html_relative_root(file)}"></br>\n')
             html.write(f'<h2>New+ sources (in range pmRA/pmDec, 100% original sources found)</h2>\n')
             for file in new_plus_files:
-                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}')
+                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}<br/>\n')
                 html.write(f'<img src="{Utils.get_html_relative_root(file)}"></br>\n')
             html.write("</body>\n")
             html.write("</html>\n")
