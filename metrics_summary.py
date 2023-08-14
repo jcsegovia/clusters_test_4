@@ -46,6 +46,7 @@ df_all = {}
 clusters_all = []
 hyper_params_all = []
 
+test_run = 0
 with open(OUTPUT_REPORTS_FILE, 'w') as output_report_file_handler:
     if len(sys.argv) > 2:
         input_reports_file = sys.argv[2]
@@ -55,8 +56,9 @@ with open(OUTPUT_REPORTS_FILE, 'w') as output_report_file_handler:
         # read lines -> report for input
         reports = Utils.read_file_by_lines(input_reports_file)
         for path in reports:
-            Utils.add_report_for_metrics(path, df_all, clusters_all, hyper_params_all)
+            Utils.add_report_for_metrics(path, df_all, clusters_all, hyper_params_all, test_run)
             output_report_file_handler.write(f'{path}\n')
+            test_run = test_run + 1
     else:
         print(f'Using default reports mechanism. Reading all report directories')
         for work_dir in DIRECTORIES:
@@ -64,8 +66,9 @@ with open(OUTPUT_REPORTS_FILE, 'w') as output_report_file_handler:
             for report_dir in report_directories:
                 if report_dir.startswith('report_'):
                     path = f'{work_dir}/{report_dir}'
-                    Utils.add_report_for_metrics(path, df_all, clusters_all, hyper_params_all)
+                    Utils.add_report_for_metrics(path, df_all, clusters_all, hyper_params_all, test_run)
                     output_report_file_handler.write(f'{path}\n')
+                    test_run = test_run + 1
 
 new_files, new_plus_files = Utils.generate_metrics_summary(df_all, subdir)
 Utils.generate_metrics_summary_html(subdir, new_files, new_plus_files, clusters_all, hyper_params_all)

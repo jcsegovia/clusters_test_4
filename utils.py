@@ -460,18 +460,19 @@ class Utils:
         fig, axis = plt.subplots(int(num_runs/3) * 2, 3, figsize=(10, 12))
         col_index = 0
         row_index = 0
-        run = 0
+        # run = 0
         model = ALGORITHM_MODELS[model_index]
         color = ALGORITHM_COLORS[model_index]
         for key in df_all.keys():
             df_data = df_all[key]
+            run = df_data['test_run']
             Utils.plot_main_metrics_item(df_data[type], model, type_column, axis, row_index, col_index, '% of increased sources',
                                    'Number of clusters', 'New sources per increased set(%)', color, type_title, run)
             col_index += 1
             if col_index == 3:
                 col_index = 0
                 row_index += 2
-            run = run + 1
+            # run = run + 1
         # plt.suptitle(model)
         # plt.show()
         fig.savefig(main_metrics_summary_file)
@@ -516,23 +517,25 @@ class Utils:
             html.write("</head>\n")
             html.write("<body>\n")
             html.write('<h2>Cluster IDs</h2>')
-            counter = 0
+            # counter = 0
             for cluster in clusters_all:
-                for cl_item in cluster:
-                    html.write(f"#{counter} {cl_item}<br/>")
-                    counter = counter + 1
-                html.write('<br/>\n')
+                html.write(f"#{cluster}<br/>")
+                # for cl_item in cluster:
+                #     html.write(f"#{cl_item}<br/>")
+                #     # html.write(f"#{counter} {cl_item}<br/>")
+                #     # counter = counter + 1
+                # html.write('<br/>\n')
             html.write('<h2>Hyper-params</h2>')
             for hyper_params in hyper_params_all:
                 html.write(f"{'<br/>'.join(hyper_params)}")
                 html.write('<br/>\n')
             html.write(f'<h2>New sources (100% original sources found)</h2>\n')
             for file in new_files:
-                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}<br/>\n')
+                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}')
                 html.write(f'<img src="{Utils.get_html_relative_root(file)}"></br>\n')
             html.write(f'<h2>New+ sources (in range pmRA/pmDec, 100% original sources found)</h2>\n')
             for file in new_plus_files:
-                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}<br/>\n')
+                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}')
                 html.write(f'<img src="{Utils.get_html_relative_root(file)}"></br>\n')
             html.write("</body>\n")
             html.write("</html>\n")
@@ -867,11 +870,13 @@ class Utils:
         return params
 
     @staticmethod
-    def add_report_for_metrics(path, df_all, clusters_all,hyper_params_all):
+    def add_report_for_metrics(path, df_all, clusters_all,hyper_params_all, test_run):
         # cluster
         cluster_id = Utils.read_file_by_lines(f'{path}/cluster_id.txt')
-        if cluster_id not in clusters_all:
-            clusters_all.append(cluster_id)
+        for cl in cluster_id:
+            clusters_all.append(f'{test_run} {cl}')
+        # if cluster_id not in clusters_all:
+        #    clusters_all.append(cluster_id)
         # hyperparams
         hyper_params = Utils.read_file_by_lines(f'{path}/hyper_params.txt')
         if hyper_params not in hyper_params_all:
@@ -884,10 +889,15 @@ class Utils:
         df_data['src'] = df
         df_found = df[df['sources'] == df['found_count']]
         df_data['found'] = df_found
-        df_data['new'] = df_found.groupby(by=['model', 'inc_percent'])[
-            ['new_count', 'cluster', 'silhouette']].max().reset_index()
-        df_data['new_plus'] = df_found.groupby(by=['model', 'inc_percent'])[
-            ['new_in_range_count', 'cluster', 'silhouette']].max().reset_index()
+        # df_data['new'] = df_found.groupby(by=['model', 'inc_percent'])[
+        #     ['new_count', 'cluster', 'silhouette']].max().reset_index()
+        # df_data['new_plus'] = df_found.groupby(by=['model', 'inc_percent'])[
+        #     ['new_in_range_count', 'cluster', 'silhouette']].max().reset_index()
+        df_data['new'] = df_found.loc[df_found.groupby(by=['model', 'inc_percent'])["new_count"].idxmax()][
+            ['model', 'inc_percent', 'new_count', 'cluster', 'silhouette']]
+        df_data['new_plus'] = df_found.loc[df_found.groupby(by=['model', 'inc_percent'])["new_in_range_count"].idxmax()][
+            ['model', 'inc_percent', 'new_in_range_count', 'cluster', 'silhouette']]
+        df_data['test_run'] = test_run
         df_all[str(path)] = df_data
         print(path)
         pass
