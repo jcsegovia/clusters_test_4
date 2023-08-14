@@ -472,7 +472,7 @@ class Utils:
                 col_index = 0
                 row_index += 2
             run = run + 1
-        plt.suptitle(model)
+        # plt.suptitle(model)
         # plt.show()
         fig.savefig(main_metrics_summary_file)
 
@@ -493,6 +493,16 @@ class Utils:
             print(f'Generated: {main_metrics_dbscan_new_plus_summary_file}')
             new_plus_files.append(main_metrics_dbscan_new_plus_summary_file)
         return new_files, new_plus_files
+
+    @staticmethod
+    def get_title_for_metrics_summary_from_file(file):
+        p = file.find('metrics_summary_')
+        if p < 0:
+            return ""
+        s = p + len('metrics_summary_')
+        tmp = file[s:]
+        e = file.find('_', s)
+        return file[s:e]
 
     @staticmethod
     def generate_metrics_summary_html(subdir, new_files, new_plus_files, clusters_all, hyper_params_all):
@@ -518,9 +528,11 @@ class Utils:
                 html.write('<br/>\n')
             html.write(f'<h2>New sources (100% original sources found)</h2>\n')
             for file in new_files:
+                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}')
                 html.write(f'<img src="{Utils.get_html_relative_root(file)}"></br>\n')
             html.write(f'<h2>New+ sources (in range pmRA/pmDec, 100% original sources found)</h2>\n')
             for file in new_plus_files:
+                html.write(f'{Utils.get_title_for_metrics_summary_from_file(file)}')
                 html.write(f'<img src="{Utils.get_html_relative_root(file)}"></br>\n')
             html.write("</body>\n")
             html.write("</html>\n")
