@@ -7,8 +7,8 @@ from utils import Utils
 
 def print_help():
     print(f'Wrong numer of arguments.')
-    print(f'Expected: python launcher.py <directory> [<input_reports_file>]')
-    print(f'\t e.g: python launcher.py ./test_1')
+    print(f'Expected: python metrics_summary.py <directory> [<input_reports_file>]')
+    print(f'\t e.g: python metrics_summary.py ./test_1')
 
 
 if len(sys.argv) < 2:
@@ -72,6 +72,7 @@ with open(OUTPUT_REPORTS_FILE, 'w') as output_report_file_handler:
                     test_run = test_run + 1
 
 new_files, new_plus_files = Utils.generate_metrics_summary(df_all, subdir)
-Utils.generate_metrics_summary_html(subdir, new_files, new_plus_files, clusters_all, hyper_params_all)
+counts_file = Utils.create_counts_report(df_all, subdir)
+Utils.generate_metrics_summary_html(subdir, new_files, new_plus_files, clusters_all, hyper_params_all, counts_file)
 
 print('Done.')
